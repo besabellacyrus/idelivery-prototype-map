@@ -1,70 +1,86 @@
 <template>
-  <div class="container">
-    <div>
-      <Logo />
-      <h1 class="title">
-        ideliver-prototype
-      </h1>
-      <div class="links">
-        <a
-          href="https://nuxtjs.org/"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="button--green"
-        >
-          Documentation
-        </a>
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="button--grey"
-        >
-          GitHub
-        </a>
+  <div class="container modal-wrapper">
+    <div v-if="$store.state.isPopup" class="user-pick">
+      <div>
+        <p>Please Choose</p>
+      </div>
+      <div><p v-if="loading">Loading...</p></div>
+      <div class="user-pick-actions"> 
+        <button @click="selectUser('rider')">Rider</button>
+        <button @click="selectUser('customer')">Customer</button>
       </div>
     </div>
+    <!-- <div class="search-wrapper">
+      <button @click="searchPickup">Search</button>
+    </div> -->
+    <Book v-if="!$store.state.isPopup" />
   </div>
 </template>
 
 <script>
-export default {}
+  import Book from '../components/Book';
+
+export default {
+  components: {
+    Book
+  },
+  data () {
+    return {
+      user: null,
+      popUp: true,
+      loading: false
+    }
+  },
+  methods: {
+    searchPickup () {
+      this.$router.push('/map')
+    },
+    selectUser(user) {
+      this.loading = true;
+      setTimeout(() => {
+        this.loading = false;
+        // this.popUp = false;
+        this.$store.commit('SET_POPUP', false)
+        this.$store.commit('SET_USER', user)
+        console.log({ user })
+      }, 1000)
+    },
+  }
+}
 </script>
 
-<style>
-/* Sample `apply` at-rules with Tailwind CSS
-.container {
-@apply min-h-screen flex justify-center items-center text-center mx-auto;
-}
-*/
-.container {
-  margin: 0 auto;
-  min-height: 100vh;
+<style lang="scss">
+ .modal-wrapper {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+ }
+.user-pick {
+  transition: all 300ms;
+  position: absolute;
+  background-color: #fff;
+  height: 9rem;
+  width: 14rem;
+  border-radius: 15px;
   display: flex;
   justify-content: center;
   align-items: center;
-  text-align: center;
-}
-
-.title {
-  font-family: 'Quicksand', 'Source Sans Pro', -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
-}
-
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
-}
-
-.links {
-  padding-top: 15px;
+  flex-flow: column;
+  box-shadow:
+  0 2.8px 2.2px rgba(0, 0, 0, 0.034),
+  0 6.7px 5.3px rgba(0, 0, 0, 0.048),
+  0 12.5px 10px rgba(0, 0, 0, 0.06),
+  0 22.3px 17.9px rgba(0, 0, 0, 0.072),
+  0 41.8px 33.4px rgba(0, 0, 0, 0.086),
+  0 100px 80px rgba(0, 0, 0, 0.12);
+  
+  .user-pick-actions {
+    margin-top: 2rem;
+    button {
+      padding: 0.4rem 1rem;
+      min-width: 6rem;
+      border: 1px solid #e3e3e3;
+    }
+  }
 }
 </style>

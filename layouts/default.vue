@@ -1,10 +1,14 @@
 <template>
-  <div>
-    <Nuxt />
-  </div>
+  <Nuxt /> 
 </template>
+<script>
+export default {
+   
+}
+</script>
 
-<style>
+<style lang="scss">
+
 html {
   font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI',
     Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -51,5 +55,19 @@ html {
 .button--grey:hover {
   color: #fff;
   background-color: #35495e;
+}
+
+.container {
+  @apply flex justify-center items-center text-center mx-auto;
+  max-width: 425px;
+  background-color: #e3e3e3;
+}
+.container {
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 </style>
