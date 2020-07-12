@@ -1,18 +1,16 @@
 <template>
-  <Nuxt /> 
+  <Nuxt />
 </template>
 <script>
-export default {
-   
-}
+export default {}
 </script>
 
 <style lang="scss">
+/* @import 'https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.0/animate.min.css'; */
 
 html {
-  font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    Roboto, 'Helvetica Neue', Arial, sans-serif;
-  font-size: 16px;
+  font-family: RobotoRegular, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 62.5%;
   word-spacing: 1px;
   -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
@@ -62,12 +60,10 @@ html {
   max-width: 425px;
   background-color: #e3e3e3;
 }
-.container {
-  margin: 0 auto;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+.app-wrapper {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100vh;
 }
 </style>

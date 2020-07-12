@@ -24,18 +24,16 @@ export default {
         content: process.env.npm_package_description || '',
       },
     ],
-    link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+    script: [
       {
-        rel: 'stylesheet',
-        href: 'https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.css',
+        src: `https://maps.googleapis.com/maps/api/js?&key=${process.env.GOOGLE_MAPS_API_KEY}&libraries=places`,
       },
     ],
   },
   /*
    ** Global CSS
    */
-  css: [],
+  css: ['~assets/scss/colors.scss', '~assets/scss/main.scss'],
   /*
    ** Plugins to load before mounting the App
    ** https://nuxtjs.org/guide/plugins
@@ -63,14 +61,18 @@ export default {
     // Doc: https://github.com/nuxt/content
     '@nuxt/content',
     '@nuxtjs/axios',
-    '@nuxtjs/pwa', 
+    '@nuxtjs/pwa',
+    // '@nuxtjs/style-resources',
   ],
+  // styleResources: {
+  //   scss: ['~/assets/scss/*.scss'],
+  // },
   /*
    ** Axios module configuration
    ** See https://axios.nuxtjs.org/options
    */
   axios: {
-    debug: true
+    debug: true,
   },
   /*
    ** Content module configuration
