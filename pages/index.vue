@@ -16,12 +16,7 @@
       </NavigationWrapper>
       <!-- <div class="top-navigation"></div> -->
       <div class="menu-wrapper" :class="{ 'menu-open': isMenuOpen }">
-        <div
-          ref="menuContent"
-          class="content"
-          tabindex="-1"
-          @focusout="handleFocusOut"
-        >
+        <div ref="menuContent" class="content" tabindex="-1" @focusout="handleFocusOut">
           <div class="menu open-menu-burger" @click="openMenu">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
               <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
@@ -32,7 +27,7 @@
           </div>
         </div>
       </div>
-      <!-- <GoogleMap /> -->
+      <GmapV2 :user-postition="userPosition" />
       <div class="book-form-wrapper">
         <div class="form-content">
           <div @click="pickupLocation">
@@ -49,13 +44,16 @@
 </template>
 
 <script>
-// import GoogleMap from '../components/GoogleMap'
+import GmapV2 from '../components/GmapV2'
 import NavigationWrapper from '../components/NavigationWrapper'
 
 export default {
-  transition: 'fade',
+  transition (to, from) {
+    if (!from) { return 'page-right' }
+    return +to.query.page < +from.query.page ? 'page-left' : 'page-right'
+  },
   components: {
-    // GoogleMap,
+    GmapV2,
     NavigationWrapper,
   },
   data() {
@@ -64,14 +62,26 @@ export default {
       popUp: true,
       loading: false,
       isMenuOpen: false,
+      userPosition: { lat: 0, lng: 0 },
     }
   },
-  methods: {
+  mounted () {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(this.showPosition);
+    } else {
+      console.log("Geolocation is not supported by this browser.")
+    }
+  },
+  methods: { 
+    showPosition (position) {
+      this.userPosition.lat = position.coords.latitude
+      this.userPosition.lng = position.coords.longitude 
+    },
     pickupLocation() {
-      // this.$router.push('pickupLocation')
+      this.$router.push('pickupLocation?page=2')
     },
     dropoffLocation() {
-      this.$router.push('dropoffLocation')
+      this.$router.push('dropoffLocation?page=2')
     },
     handleFocusOut() {
       this.isMenuOpen = false

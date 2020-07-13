@@ -11,3 +11,65 @@
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
 }
+
+/* during entering and leaving : */
+.page-left-enter-active,
+.page-left-leave-active {
+  position: absolute;
+  max-width: 725.328px; /*make sur our content keep it's original width*/
+  transition: all 0.2s ease-in;
+}
+
+/* entering start */
+.page-left-enter {
+  left: -100%;
+}
+
+/* entering end */
+.page-left-enter-to {
+  left: 0;
+}
+
+/* leaving start */
+.page-left-leave {
+  opacity: 1;
+}
+
+/* leaving end */
+.page-left-leave-to {
+  opacity: 0;
+}
+
+/* during entering and leaving : */
+.page-right-enter-active,
+.page-right-leave-active {
+  position: absolute;
+  max-width: 425px; /*make sur our content keep it's original width*/
+  transition: all 300ms ease;
+}
+
+/* entering start */
+.page-right-enter {
+  right: -100%;
+}
+
+/* entering end */
+.page-right-enter-to {
+  right: 0;
+}
+
+/* leaving start */
+.page-right-leave {
+  opacity: 1;
+}
+
+/* leaving end */
+.page-right-leave-to {
+  opacity: 0;
+}
+
+
+@keyframes slideDown {
+  from {top: -100px; opacity: 0; }
+  to {top: 60px; opacity: 1; }
+}

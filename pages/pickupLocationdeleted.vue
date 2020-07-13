@@ -10,7 +10,7 @@
         </div>
       </NavigationWrapper>
       <div id="map"></div>
-    </div> -->
+    </div>-->
   </div>
 </template>
 
@@ -116,9 +116,6 @@
 </script>
 
 <style lang="scss">
-.pickup-location-nav {
-  /* height: 1rem; */
-}
 #map {
   height: 100vh;
   width: 100%;
