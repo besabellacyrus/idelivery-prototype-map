@@ -33,12 +33,16 @@ export default {
   /*
    ** Global CSS
    */
-  css: ['~assets/scss/main.scss'],
+  css: [
+    { src: 'vue-material/dist/vue-material.min.css', lang: 'css' },
+    { src: '~/assets/theme.scss', lang: 'scss' },
+    { src: '~assets/scss/main.scss', lang: 'scss' },
+  ],
   /*
    ** Plugins to load before mounting the App
    ** https://nuxtjs.org/guide/plugins
    */
-  plugins: [],
+  plugins: [{ src: '~/plugins/vue-material' }],
   /*
    ** Auto import components
    ** See https://nuxtjs.org/api/configuration-components
