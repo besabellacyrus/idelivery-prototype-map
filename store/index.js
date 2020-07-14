@@ -28,6 +28,12 @@ export const mutations = {
     state.dropoffLocationDetails = payload
   },
   SET_SEARCH_HISTORY(state, payload) {
-    state.searchHistory.push(payload)
+    if (
+      !state.searchHistory.find(
+        (el) => el.location_name === payload.location_name
+      )
+    ) {
+      state.searchHistory.push(payload)
+    }
   },
 }

@@ -84,6 +84,7 @@ export default {
           marker.setMap(null)
         })
         this.markers = []
+
         // eslint-disable-next-line no-undef
         const bounds = new google.maps.LatLngBounds()
 
@@ -122,11 +123,23 @@ export default {
         }
         this.map.fitBounds(bounds)
       })
-
-      // this.map.panBy(0,-130)
       this.$emit('mapObj', this.map)
     }
   },
+  methods: {
+    setMarker (data) {
+      console.log({ data })
+      // eslint-disable-next-line no-undef, no-unused-vars
+      const marker = new google.maps.Marker({
+        map: this.map,
+        icon: this.icons.pin.icon,
+        title: data.location_name,
+        position: data.coord,
+      })
+      marker.setMap(null)
+      marker.setMap(this.map);
+    }
+  }
 }
 </script>
 

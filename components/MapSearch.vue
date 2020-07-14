@@ -21,12 +21,30 @@
         </div>
       </NavigationWrapper>
       <div v-if="hasHistory" class="history-wrapper">
-        <div class="history-item">Current Location</div>
+        <div class="history-item" @click="setLocationFromHistory('current')">
+          <span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+              <path
+                d="M10 20S3 10.87 3 7a7 7 0 1 1 14 0c0 3.87-7 13-7 13zm0-11a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"
+              />
+            </svg>
+          </span> Current Location
+        </div>
         <div
           v-for="item in $store.state.searchHistory"
-          :key="item.message"
+          :key="item.location_name"
           class="history-item"
-        >{{ item.location_name }}</div>
+          @click="setLocationFromHistory(item)"
+        >
+          <span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+              <path
+                d="M10 20a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-1-7.59V4h2v5.59l3.95 3.95-1.41 1.41L9 10.41z"
+              />
+            </svg>
+          </span>
+          {{ item.location_name }}
+        </div>
       </div>
       <div v-if="isFormDetails" class="details-wrapper">
         <form class="delivery-form">
@@ -74,7 +92,12 @@
           </div>
         </form>
       </div>
-      <GmapV2 :map-obj="theMap" :search-input="$refs" @place-changed="setFormDetails" />
+      <GmapV2
+        ref="gmapref"
+        :map-obj="theMap"
+        :search-input="$refs"
+        @place-changed="setFormDetails"
+      />
     </div>
   </div>
 </template>
@@ -100,7 +123,8 @@ export default {
       contact_phone: '',
       showErrase: false,
       coord: null,
-      hasHistory: false
+      hasHistory: false,
+      searchType: 'pickup'
     }
   }, 
   mounted() {
@@ -112,7 +136,29 @@ export default {
     this.hasHistory = !this.showErrase;
   },
   methods: {
+    setLocationFromHistory(data) {
+      if (data === 'current') {
+        // reverse geocode
+      } else {
+        // eslint-disable-next-line camelcase
+        const { location_name, room, floor, contact_phone, contact_name, searchType, coord } = data; 
+        // eslint-disable-next-line camelcase
+        this.$refs.searchTextField.value = location_name;
+        this.room = room;
+        this.floor = floor;
+        // eslint-disable-next-line camelcase
+        this.contact_name = contact_name;
+        // eslint-disable-next-line camelcase
+        this.contact_phone = contact_phone;
+        this.searchType = searchType
+        this.coord = coord
+        this.$refs.gmapref.setMarker(data)
+      }
+    },
     getPickup () {
+      if (this.$refs.searchTextField.value === "") {
+        return;
+      }
       const payload = {
         location_name: this.$refs.searchTextField.value ? this.$refs.searchTextField.value : '' ,
         room: this.room,
@@ -122,12 +168,16 @@ export default {
         coord: this.coord,
         searchType: 'pickup'
       }
+      this.searchType = 'pickup'
       console.log({ payload })
       this.$store.commit('SET_PICKUP_DETAILS', payload)
       this.$store.commit('SET_SEARCH_HISTORY', payload)
       this.$router.push('/?page=1')
     },
     getDropoff() {
+      if (this.$refs.searchTextField.value === "") {
+        return;
+      }
       const payload = {
         location_name: this.$refs.searchTextField.value ? this.$refs.searchTextField.value : '',
         room: this.room,
@@ -137,6 +187,7 @@ export default {
         coord: this.coord,
         searchType: 'dropoff'
       } 
+      this.searchType = 'dropoff'
       this.$store.commit('SET_DROPOFF_DETAILS', payload)
       this.$store.commit('SET_SEARCH_HISTORY', payload)
       this.$router.push('/?page=1')
