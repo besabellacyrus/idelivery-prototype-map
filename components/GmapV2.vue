@@ -74,8 +74,7 @@ export default {
         this.$props.searchInput.searchTextField
       )
       this.searchBox.addListener('place_changed', () => {
-        // display form details
-        this.$emit('place-changed')
+        
         const place = this.searchBox.getPlace()
         if (!place) {
           return
@@ -103,16 +102,7 @@ export default {
         //   // eslint-disable-next-line no-undef
         //   scaledSize: new google.maps.Size(25, 25),
         // }
-        // Create a marker for each place.
-        // this.markers.push(
-        //   // eslint-disable-next-line no-undef
-        //   new google.maps.Marker({
-        //     map: this.map,
-        //     icon: this.icons.pin.icon,
-        //     title: place.name,
-        //     position: place.geometry.location,
-        //   })
-        // )
+
         // eslint-disable-next-line no-undef, no-unused-vars
         const markers = new google.maps.Marker({
           map: this.map,
@@ -121,9 +111,9 @@ export default {
           position: place.geometry.location,
         })
 
-        
+        // display form details
+        this.$emit('place-changed', place.geometry.location)
 
-        console.log({ ppp: place.geometry.location })
         if (place.geometry.viewport) {
           // Only geocodes have viewport.
           bounds.union(place.geometry.viewport)

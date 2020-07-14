@@ -8,6 +8,82 @@ body {
   color: #5d5d5d;
 }
 
+.btn-wrapper {
+  position: fixed;
+  bottom: 2rem;
+  height: 5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 0 auto;
+  button {
+    height: 5rem;
+    width: 28rem;
+    font-size: 1.75rem;
+    background: #ece71f;
+    border: 1px solid #dcd81d;
+    border-radius: 6px;
+  }
+}
+
+.search-box {
+  width: 100%;
+  padding: 1rem;
+  .close-btn {
+    position: absolute;
+    right: 14px;
+    z-index: 9999999;
+    top: 24%;
+    svg {
+      height: 3rem;
+    }
+  }
+  input {
+    width: 100%;
+    padding: 1rem;
+    height: 4rem;
+    font-size: 1.7rem;
+  }
+}
+.back {
+  width: 7rem;
+  height: 100%;
+  background: #000;
+  svg {
+    fill: #fff;
+  }
+}
+.details-wrapper, .history-wrapper {
+  position: absolute;
+  width: 100%;
+  z-index: 6;
+  top: 6rem;
+  background: rgba(255, 255, 255, 0.96);
+  animation: slideDown 500ms;
+  padding: 1rem;
+}
+
+.history-wrapper {
+  text-align: left;
+  max-height: 23rem;
+  overflow-y: scroll;
+  .history-item {
+    display: flex;
+    align-items: center;
+    height: 4rem;
+    border-bottom: 1px solid #e3e3e3;
+  }
+}
+.md-field {
+  margin: initial !important;
+}
+.two-fields {
+  .md-input {
+    width: 100% !important;
+  }
+}
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.5s;
@@ -20,7 +96,8 @@ body {
 .page-left-enter-active,
 .page-left-leave-active {
   position: absolute;
-  max-width: 725.328px; /*make sur our content keep it's original width*/
+  // max-width: 725.328px; /*make sur our content keep it's original width*/
+  width: 100%;
   transition: all 0.2s ease-in;
 }
 

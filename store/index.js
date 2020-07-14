@@ -1,8 +1,11 @@
 export const state = () => ({
   pickup: false,
   dropoff: false,
-  user: "customer",
+  user: 'customer',
   isPopup: true,
+  pickupLocationDetails: null,
+  dropoffLocationDetails: null,
+  searchHistory: [],
 })
 
 export const mutations = {
@@ -17,5 +20,14 @@ export const mutations = {
   },
   SET_POPUP(state, popup) {
     state.isPopup = popup
-  }
+  },
+  SET_PICKUP_DETAILS(state, payload) {
+    state.pickupLocationDetails = payload
+  },
+  SET_DROPOFF_DETAILS(state, payload) {
+    state.dropoffLocationDetails = payload
+  },
+  SET_SEARCH_HISTORY(state, payload) {
+    state.searchHistory.push(payload)
+  },
 }

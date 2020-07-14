@@ -31,10 +31,10 @@
       <div class="book-form-wrapper">
         <div class="form-content">
           <div @click="pickupLocation">
-            <span>Pick-Up</span>
+            <span>{{ $store.state.pickupLocationDetails ? $store.state.pickupLocationDetails.location_name : 'Pick-Up Location' }}</span>
           </div>
           <div @click="dropoffLocation">
-            <span>Drop-Off</span>
+            <span>{{ $store.state.dropoffLocationDetails ? $store.state.dropoffLocationDetails.location_name : 'Drop-Off Location' }}</span>
           </div>
         </div>
         <button>BOOK</button>

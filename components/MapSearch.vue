@@ -20,6 +20,14 @@
           </div>
         </div>
       </NavigationWrapper>
+      <div v-if="hasHistory" class="history-wrapper">
+        <div class="history-item">Current Location</div>
+        <div
+          v-for="item in $store.state.searchHistory"
+          :key="item.message"
+          class="history-item"
+        >{{ item.location_name }}</div>
+      </div>
       <div v-if="isFormDetails" class="details-wrapper">
         <form class="delivery-form">
           <div class="text-left font-bold py-4">
@@ -73,6 +81,7 @@
 
 <script>
 import GmapV2 from '../components/GmapV2'
+
 export default {
   components: {
     GmapV2,
@@ -81,25 +90,57 @@ export default {
     return {
       map: '',
       markers: [],
-      mapBounds: {},
-      searchInput: '',
+      mapBounds: {}, 
+      searchInputBox: '',
       isFormDetails: false,
       room: '',
       floor: '',
       block_bldg: '',
       contact_name: '',
       contact_phone: '',
-      showErrase: false
+      showErrase: false,
+      coord: null,
+      hasHistory: false
     }
-  },
+  }, 
   mounted() {
     this.$refs.searchTextField.focus()
     this.$refs.searchTextField.addEventListener('keyup', () => {
-      console.log({ vaaa: this.$refs.searchTextField.value })
+      this.hasHistory = false;
       this.showErrase = true
     })
+    this.hasHistory = !this.showErrase;
   },
   methods: {
+    getPickup () {
+      const payload = {
+        location_name: this.$refs.searchTextField.value ? this.$refs.searchTextField.value : '' ,
+        room: this.room,
+        floor: this.floor,
+        contact_name: this.contact_name,
+        contact_phone: this.contact_phone,
+        coord: this.coord,
+        searchType: 'pickup'
+      }
+      console.log({ payload })
+      this.$store.commit('SET_PICKUP_DETAILS', payload)
+      this.$store.commit('SET_SEARCH_HISTORY', payload)
+      this.$router.push('/?page=1')
+    },
+    getDropoff() {
+      const payload = {
+        location_name: this.$refs.searchTextField.value ? this.$refs.searchTextField.value : '',
+        room: this.room,
+        floor: this.floor,
+        contact_name: this.contact_name,
+        contact_phone: this.contact_phone,
+        coord: this.coord,
+        searchType: 'dropoff'
+      } 
+      this.$store.commit('SET_DROPOFF_DETAILS', payload)
+      this.$store.commit('SET_SEARCH_HISTORY', payload)
+      this.$router.push('/?page=1')
+    },
     async openContacts() { 
       const supported = 'contacts' in navigator && 'ContactsManager' in window
       if (supported) {
@@ -119,13 +160,15 @@ export default {
       this.$refs.searchTextField.value = ""
       this.showErrase = false
       this.isFormDetails = false
+      this.hasHistory = !this.showErrase;
     },
     handleResults(contact) {
       this.contact_name = contact[0].name;
       this.contact_phone = contact[0].tel;
     },
-    setFormDetails() {
+    setFormDetails(place) {
       this.isFormDetails = true
+      this.coord = place
     },
     theMap(val) {
       this.map = val
@@ -135,48 +178,4 @@ export default {
 </script>
 
 <style lang="scss">
-.search-box {
-  width: 100%;
-  padding: 1rem;
-  .close-btn {
-    position: absolute;
-    right: 14px;
-    z-index: 9999999;
-    top: 24%;
-    svg {
-      height: 3rem;
-    }
-  }
-  input {
-    width: 100%;
-    padding: 1rem;
-    height: 4rem;
-    font-size: 1.7rem;
-  }
-}
-.back {
-  width: 7rem;
-  height: 100%;
-  background: #000;
-  svg {
-    fill: #fff;
-  }
-}
-.details-wrapper {
-  position: absolute;
-  width: 100%;
-  z-index: 6;
-  top: 6rem;
-  background: rgba(255, 255, 255, 0.96);
-  animation: slideDown 500ms;
-  padding: 1rem;
-}
-.md-field {
-  margin: initial !important;
-}
-.two-fields {
-  .md-input {
-    width: 100% !important;
-  }
-}
 </style>
