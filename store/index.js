@@ -8,6 +8,7 @@ export const state = () => ({
   searchHistory: [],
   userCoord: { lat: 0, lng: 0 },
   drivingDistance: {},
+  userLocation: {},
 })
 
 export const mutations = {
@@ -46,5 +47,8 @@ export const mutations = {
         state.searchHistory.push(payload)
       }
     }
+  },
+  SET_USER_LOCATION(state, payload) {
+    state.userLocation = payload
   },
 }

@@ -10,10 +10,6 @@ export default {
       type: Object,
       default: () => {},
     },
-    userPostition: {
-      type: Object,
-      default: () => ({ lat: 14.3115226, lng: 120.9303834 }),
-    }
   },
   data() {
     return {
@@ -41,11 +37,12 @@ export default {
     }
   },
   mounted() {
+    const userCoord = this.$store.state.userCoord
     const center = {
-      lat: this.userPostition.lat || 14.3115226,
-      lng: this.userPostition.lng || 120.9303834,
+      lat: userCoord.lat || 0,
+      lng: userCoord.lng || 0,
     }
-    
+
     // eslint-disable-next-line no-undef
     this.map = new google.maps.Map(document.getElementById('map'), {
       center,
@@ -59,14 +56,12 @@ export default {
       mapTypeId: 'roadmap',
     })
 
-
     // eslint-disable-next-line no-undef, no-new
-     new google.maps.Marker({
-      map: this.map, 
+    new google.maps.Marker({
+      map: this.map,
       title: 'Me',
       position: center,
     })
-
 
     if (this.$props.searchInput) {
       // eslint-disable-next-line no-undef
@@ -74,7 +69,6 @@ export default {
         this.$props.searchInput.searchTextField
       )
       this.searchBox.addListener('place_changed', () => {
-        
         const place = this.searchBox.getPlace()
         if (!place) {
           return
@@ -112,7 +106,10 @@ export default {
           position: place.geometry.location,
         })
         // display form details
-        this.$emit('place-changed', { lng: place.geometry.location.lng(), lat: place.geometry.location.lat() })
+        this.$emit('place-changed', {
+          lng: place.geometry.location.lng(),
+          lat: place.geometry.location.lat(),
+        })
 
         if (place.geometry.viewport) {
           // Only geocodes have viewport.
@@ -126,13 +123,25 @@ export default {
     }
   },
   methods: {
-    setCurrentLocation () {
-      // eslint-disable-next-line no-undef
-      const geocoder = new google.maps.Geocoder();
-      this.geocodeLatLng(geocoder, this.map);
-      
+    setMyMarker(data) {
+      const center = {
+        lat: data.lat || 0,
+        lng: data.lng || 0,
+      }
+      // eslint-disable-next-line no-undef, no-new
+      new google.maps.Marker({
+        title: 'Me',
+        position: center,
+        map: this.map,
+      })
+      this.map.setCenter(center)
     },
-    setMarker (data) {
+    setCurrentLocation() {
+      // eslint-disable-next-line no-undef
+      const geocoder = new google.maps.Geocoder()
+      this.geocodeLatLng(geocoder, this.map, this.$store)
+    },
+    setMarker(data) {
       const latlng = {
         lat: data.coord.lat || 0,
         lng: data.coord.lng || 0,
@@ -141,70 +150,75 @@ export default {
       const marker = new google.maps.Marker({
         position: latlng,
         map: this.map,
-        icon: this.icons.pin.icon, 
+        icon: this.icons.pin.icon,
       })
       this.map.setCenter(latlng)
     },
-    calculateTravel () {
+    calculateTravel() {
       // eslint-disable-next-line no-undef
-      const directionsService = new google.maps.DirectionsService();
-     
+      const directionsService = new google.maps.DirectionsService()
 
-      if (this.$store.state.pickupLocationDetails && this.$store.state.dropoffLocationDetails) {
+      if (
+        this.$store.state.pickupLocationDetails &&
+        this.$store.state.dropoffLocationDetails
+      ) {
         const route = {
           origin: this.$store.state.pickupLocationDetails.coord,
           destination: this.$store.state.dropoffLocationDetails.coord,
-          travelMode: 'DRIVING'
+          travelMode: 'DRIVING',
         }
 
-        directionsService.route(route, this.getDirection);
+        directionsService.route(route, this.getDirection)
       }
     },
-    getDirection (response, status) { // anonymous function to capture directions
+    getDirection(response, status) {
+      // anonymous function to capture directions
       // eslint-disable-next-line no-undef
-      const directionsRenderer = new google.maps.DirectionsRenderer();
-      directionsRenderer.setMap(this.map);
+      const directionsRenderer = new google.maps.DirectionsRenderer()
+      directionsRenderer.setMap(this.map)
       if (status !== 'OK') {
-        alert('Directions request failed due to ' + status);
+        alert('Directions request failed due to ' + status)
       } else {
-        directionsRenderer.setDirections(response); // Add route to the map
-        const directionsData = response.routes[0].legs[0]; // Get data about the mapped route
+        directionsRenderer.setDirections(response) // Add route to the map
+        const directionsData = response.routes[0].legs[0] // Get data about the mapped route
         if (!directionsData) {
-          console.log('Directions request failed');
-        } else { 
+          console.log('Directions request failed')
+        } else {
           this.$store.commit('SET_DRIVING_DISTANCE', directionsData)
           // alert(" Driving distance is " + directionsData.distance.text + " (" + directionsData.duration.text + ").")
         }
       }
     },
-    geocodeLatLng(geocoder, map) {
+    geocodeLatLng(geocoder, map, store) {
+      const userCoord = this.$store.state.userCoord
       const latlng = {
-        lat: this.userPostition.lat || 0,
-        lng: this.userPostition.lng || 0,
+        lat: userCoord.lat || 0,
+        lng: userCoord.lng || 0,
       }
       const icon = this.icons.pin.icon
-      geocoder.geocode({ location: latlng }, function(results, status) {
-        if (status === "OK") {
+
+      geocoder.geocode({ location: latlng }, function (results, status) {
+        if (status === 'OK') {
           if (results[0]) {
-            console.log({ results: results[0] })
-            map.setZoom(11);
+            store.commit('SET_USER_LOCATION', { user: results[0], latlng })
+            map.setZoom(16)
             // eslint-disable-next-line no-undef, no-unused-vars
             const marker = new google.maps.Marker({
               position: latlng,
               icon,
               map,
-            });
+            })
             // infowindow.setContent(results[0].formatted_address);
             // infowindow.open(map, marker);
           } else {
-            console.log("No results found");
+            console.log('No results found')
           }
         } else {
-          console.log("Geocoder failed due to: " + status);
+          console.log('Geocoder failed due to: ' + status)
         }
-      });
-    }
-  }
+      })
+    },
+  },
 }
 </script>
 

@@ -73,6 +73,12 @@
                   <md-input v-model="block_bldg"></md-input>
                 </md-field>
               </div>
+              <div class="md-layout-item">
+                <md-field>
+                  <label>Nearest Land Mark</label>
+                  <md-input v-model="land_mark"></md-input>
+                </md-field>
+              </div>
               <div class="md-layout-item md-size-80">
                 <md-field ref="contactName">
                   <label>Contact Name</label>
@@ -124,7 +130,8 @@ export default {
       showErrase: false,
       coord: null,
       hasHistory: false,
-      searchType: 'pickup'
+      searchType: 'pickup',
+      land_mark: ''
     }
   }, 
   mounted() {
@@ -138,15 +145,19 @@ export default {
   methods: {
     setLocationFromHistory(data) {
       // eslint-disable-next-line camelcase
-      const { location_name, room, floor, contact_phone, contact_name, searchType, coord } = data;
+      const { location_name, room, floor, contact_phone, contact_name, searchType, coord, land_mark } = data;
       if (data === 'current') {
-        // reverse geocode 
-        this.$refs.searchTextField.value = 'My Current Location'; 
-        this.coord = coord
-        this.searchType = searchType
+        this.isFormDetails = true
         this.$refs.gmapref.setCurrentLocation();
+        const userData = this.$store.state.userLocation;
+        if (userData.user) {
+          this.$refs.searchTextField.value = userData.user.formatted_address;
+          this.coord = userData.latlng
+          // eslint-disable-next-line camelcase
+          this.searchType = searchType
+          console.log({ userData })
+        }
       } else {
-         
         // eslint-disable-next-line camelcase
         this.$refs.searchTextField.value = location_name;
         this.room = room;
@@ -157,6 +168,8 @@ export default {
         this.contact_phone = contact_phone;
         this.searchType = searchType
         this.coord = coord
+        // eslint-disable-next-line camelcase
+        this.land_mark = land_mark;
         this.$refs.gmapref.setMarker(data)
       }
     },
@@ -171,6 +184,7 @@ export default {
         contact_name: this.contact_name,
         contact_phone: this.contact_phone,
         coord: this.coord,
+        land_mark: this.land_mark,
         searchType: 'pickup'
       }
       this.searchType = 'pickup'
@@ -189,6 +203,7 @@ export default {
         contact_name: this.contact_name,
         contact_phone: this.contact_phone,
         coord: this.coord,
+        land_mark: this.land_mark,
         searchType: 'dropoff'
       } 
       this.searchType = 'dropoff'
