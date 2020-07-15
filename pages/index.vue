@@ -27,14 +27,24 @@
           </div>
         </div>
       </div>
-      <GmapV2 :user-postition="userPosition" />
+      <GmapV2 ref="gmapref" :user-postition="userPosition" />
       <div class="book-form-wrapper">
         <div class="form-content">
           <div @click="pickupLocation">
+            <div class="form-icon">
+              <img src="/me.png" alt />
+            </div>
             <span>{{ $store.state.pickupLocationDetails ? $store.state.pickupLocationDetails.location_name : 'Pick-Up Location' }}</span>
           </div>
           <div @click="dropoffLocation">
+            <div class="form-icon">
+              <img src="/pin.png" alt />
+            </div>
             <span>{{ $store.state.dropoffLocationDetails ? $store.state.dropoffLocationDetails.location_name : 'Drop-Off Location' }}</span>
+          </div>
+          <div v-if="$store.state.drivingDistance.distance" class="book-info text-left">
+            <div>Distance: {{ $store.state.drivingDistance.distance.text }} &nbsp;</div>
+            <div>Duration: {{ $store.state.drivingDistance.duration.text }}</div>
           </div>
         </div>
         <button>BOOK</button>
@@ -69,7 +79,11 @@ export default {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(this.showPosition);
     } else {
-      console.log("Geolocation is not supported by this browser.")
+      //
+    }
+    // Calculate Travel
+    if (this.$store.state.pickupLocationDetails && this.$store.state.dropoffLocationDetails) {
+      this.$refs.gmapref.calculateTravel()
     }
   },
   methods: { 
@@ -102,6 +116,17 @@ export default {
         this.$store.commit('SET_USER', user)
       }, 1000)
     },
+    haversine_distance(mk1, mk2) {
+      // this is for straight line, are you a pigeon?
+      const R = 3958.8; // Radius of the Earth in miles
+      const rlat1 = mk1.lat * (Math.PI/180); // Convert degrees to radians
+      const rlat2 = mk2.lat * (Math.PI/180); // Convert degrees to radians
+      const difflat = rlat2-rlat1; // Radian difference (latitudes)
+      const difflon = (mk2.lng-mk1.lng) * (Math.PI/180); // Radian difference (longitudes)
+
+      const d = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat/2)*Math.sin(difflat/2)+Math.cos(rlat1)*Math.cos(rlat2)*Math.sin(difflon/2)*Math.sin(difflon/2)));
+      return d;
+    },
   },
 }
 </script>
@@ -115,16 +140,29 @@ $red: #ec2228;
 .book-form-wrapper {
   position: absolute;
   bottom: 0;
-  height: 17rem;
+  height: 22rem;
   background-color: #fff;
   width: 100%;
   display: grid;
   grid-template-rows: 1fr 0.3fr;
   .form-content {
     display: grid;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
     padding: 1rem;
     grid-gap: 1rem;
+    span {
+      width: 100%;
+    }
+    .form-icon {
+      width: 3rem;
+      margin-left: 1rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      img {
+        width: 100%;
+      }
+    }
     & > div {
       display: flex;
       align-items: center;

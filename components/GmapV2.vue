@@ -62,11 +62,11 @@ export default {
 
     // eslint-disable-next-line no-undef, no-new
      new google.maps.Marker({
-      map: this.map,
-      icon: this.icons.me.icon,
+      map: this.map, 
       title: 'Me',
       position: center,
     })
+
 
     if (this.$props.searchInput) {
       // eslint-disable-next-line no-undef
@@ -79,17 +79,17 @@ export default {
         if (!place) {
           return
         }
+
         // Clear out the old markers.
-        this.markers.forEach(function (marker) {
-          marker.setMap(null)
-        })
-        this.markers = []
+        // this.markers.forEach(function (marker) {
+        //   marker.setMap(null)
+        // })
+        // this.markers = []
 
         // eslint-disable-next-line no-undef
         const bounds = new google.maps.LatLngBounds()
 
         if (!place.geometry) {
-          console.log('Returned place contains no geometry')
           return
         }
         // const icon = {
@@ -111,9 +111,8 @@ export default {
           title: place.name,
           position: place.geometry.location,
         })
-
         // display form details
-        this.$emit('place-changed', place.geometry.location)
+        this.$emit('place-changed', { lng: place.geometry.location.lng(), lat: place.geometry.location.lat() })
 
         if (place.geometry.viewport) {
           // Only geocodes have viewport.
@@ -127,17 +126,83 @@ export default {
     }
   },
   methods: {
+    setCurrentLocation () {
+      // eslint-disable-next-line no-undef
+      const geocoder = new google.maps.Geocoder();
+      this.geocodeLatLng(geocoder, this.map);
+      
+    },
     setMarker (data) {
-      console.log({ data })
+      const latlng = {
+        lat: data.coord.lat || 0,
+        lng: data.coord.lng || 0,
+      }
       // eslint-disable-next-line no-undef, no-unused-vars
       const marker = new google.maps.Marker({
+        position: latlng,
         map: this.map,
-        icon: this.icons.pin.icon,
-        title: data.location_name,
-        position: data.coord,
+        icon: this.icons.pin.icon, 
       })
-      marker.setMap(null)
-      marker.setMap(this.map);
+      this.map.setCenter(latlng)
+    },
+    calculateTravel () {
+      // eslint-disable-next-line no-undef
+      const directionsService = new google.maps.DirectionsService();
+     
+
+      if (this.$store.state.pickupLocationDetails && this.$store.state.dropoffLocationDetails) {
+        const route = {
+          origin: this.$store.state.pickupLocationDetails.coord,
+          destination: this.$store.state.dropoffLocationDetails.coord,
+          travelMode: 'DRIVING'
+        }
+
+        directionsService.route(route, this.getDirection);
+      }
+    },
+    getDirection (response, status) { // anonymous function to capture directions
+      // eslint-disable-next-line no-undef
+      const directionsRenderer = new google.maps.DirectionsRenderer();
+      directionsRenderer.setMap(this.map);
+      if (status !== 'OK') {
+        alert('Directions request failed due to ' + status);
+      } else {
+        directionsRenderer.setDirections(response); // Add route to the map
+        const directionsData = response.routes[0].legs[0]; // Get data about the mapped route
+        if (!directionsData) {
+          console.log('Directions request failed');
+        } else { 
+          this.$store.commit('SET_DRIVING_DISTANCE', directionsData)
+          // alert(" Driving distance is " + directionsData.distance.text + " (" + directionsData.duration.text + ").")
+        }
+      }
+    },
+    geocodeLatLng(geocoder, map) {
+      const latlng = {
+        lat: this.userPostition.lat || 0,
+        lng: this.userPostition.lng || 0,
+      }
+      const icon = this.icons.pin.icon
+      geocoder.geocode({ location: latlng }, function(results, status) {
+        if (status === "OK") {
+          if (results[0]) {
+            console.log({ results: results[0] })
+            map.setZoom(11);
+            // eslint-disable-next-line no-undef, no-unused-vars
+            const marker = new google.maps.Marker({
+              position: latlng,
+              icon,
+              map,
+            });
+            // infowindow.setContent(results[0].formatted_address);
+            // infowindow.open(map, marker);
+          } else {
+            console.log("No results found");
+          }
+        } else {
+          console.log("Geocoder failed due to: " + status);
+        }
+      });
     }
   }
 }

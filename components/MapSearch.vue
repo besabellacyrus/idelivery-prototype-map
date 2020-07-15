@@ -137,11 +137,16 @@ export default {
   },
   methods: {
     setLocationFromHistory(data) {
+      // eslint-disable-next-line camelcase
+      const { location_name, room, floor, contact_phone, contact_name, searchType, coord } = data;
       if (data === 'current') {
-        // reverse geocode
+        // reverse geocode 
+        this.$refs.searchTextField.value = 'My Current Location'; 
+        this.coord = coord
+        this.searchType = searchType
+        this.$refs.gmapref.setCurrentLocation();
       } else {
-        // eslint-disable-next-line camelcase
-        const { location_name, room, floor, contact_phone, contact_name, searchType, coord } = data; 
+         
         // eslint-disable-next-line camelcase
         this.$refs.searchTextField.value = location_name;
         this.room = room;
@@ -169,7 +174,6 @@ export default {
         searchType: 'pickup'
       }
       this.searchType = 'pickup'
-      console.log({ payload })
       this.$store.commit('SET_PICKUP_DETAILS', payload)
       this.$store.commit('SET_SEARCH_HISTORY', payload)
       this.$router.push('/?page=1')
